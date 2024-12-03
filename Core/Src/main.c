@@ -57,7 +57,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t count_led_debug = 0;
+uint16_t count_led_debug = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,6 +68,7 @@ void test_LedDebug();
 void displayTime();
 void updateTime();
 void runSystem();
+void test_Uart();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -124,7 +125,7 @@ int main(void)
 	  flag_timer2 = 0;
 	  button_Scan();
 	  ds3231_ReadTime();
-
+	  test_Uart();
 	  runSystem();
     /* USER CODE BEGIN 3 */
   }
@@ -182,10 +183,12 @@ void system_init(){
 	  HAL_GPIO_WritePin(OUTPUT_Y0_GPIO_Port, OUTPUT_Y0_Pin, 0);
 	  HAL_GPIO_WritePin(OUTPUT_Y1_GPIO_Port, OUTPUT_Y1_Pin, 0);
 	  HAL_GPIO_WritePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin, 0);
+
 	  timer_init();
 	  led7_init();
 	  button_init();
 	  lcd_init();
+	  uart_init_rs232();
 	  ds3231_init();
 	  setTimer2(50);
 }
@@ -209,6 +212,17 @@ void test_button(){
 			led7_SetDigit(i/10, 2, 0);
 			led7_SetDigit(i%10, 3, 0);
 		}
+	}
+}
+
+void test_Uart(){
+	if(button_count [13] == 1){
+		uart_Rs232SendNum (ds3231_hours);
+		uart_Rs232SendString (":");
+		uart_Rs232SendNum ( ds3231_min );
+		uart_Rs232SendString (":");
+		uart_Rs232SendNum ( ds3231_sec );
+		uart_Rs232SendString ("\n");
 	}
 }
 
